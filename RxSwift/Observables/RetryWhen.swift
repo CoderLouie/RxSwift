@@ -20,21 +20,7 @@ extension ObservableType {
         -> Observable<Element> {
         RetryWhenSequence(sources: InfiniteSequence(repeatedValue: self.asObservable()), notificationHandler: notificationHandler)
     }
-
-    /**
-     Repeats the source observable sequence on error when the notifier emits a next value.
-     If the source observable errors and the notifier completes, it will complete the source sequence.
-
-     - seealso: [retry operator on reactivex.io](http://reactivex.io/documentation/operators/retry.html)
-
-     - parameter notificationHandler: A handler that is passed an observable sequence of errors raised by the source observable and returns and observable that either continues, completes or errors. This behavior is then applied to the source observable.
-     - returns: An observable sequence producing the elements of the given sequence repeatedly until it terminates successfully or is notified to error or complete.
-     */
-    @available(*, deprecated, renamed: "retry(when:)")
-    public func retryWhen<TriggerObservable: ObservableType, Error: Swift.Error>(_ notificationHandler: @escaping (Observable<Error>) -> TriggerObservable)
-        -> Observable<Element> {
-        retry(when: notificationHandler)
-    }
+ 
 
     /**
      Repeats the source observable sequence on error when the notifier emits a next value.
@@ -48,22 +34,7 @@ extension ObservableType {
     public func retry<TriggerObservable: ObservableType>(when notificationHandler: @escaping (Observable<Swift.Error>) -> TriggerObservable)
         -> Observable<Element> {
         RetryWhenSequence(sources: InfiniteSequence(repeatedValue: self.asObservable()), notificationHandler: notificationHandler)
-    }
-
-    /**
-     Repeats the source observable sequence on error when the notifier emits a next value.
-     If the source observable errors and the notifier completes, it will complete the source sequence.
-
-     - seealso: [retry operator on reactivex.io](http://reactivex.io/documentation/operators/retry.html)
-
-     - parameter notificationHandler: A handler that is passed an observable sequence of errors raised by the source observable and returns and observable that either continues, completes or errors. This behavior is then applied to the source observable.
-     - returns: An observable sequence producing the elements of the given sequence repeatedly until it terminates successfully or is notified to error or complete.
-     */
-    @available(*, deprecated, renamed: "retry(when:)")
-    public func retryWhen<TriggerObservable: ObservableType>(_ notificationHandler: @escaping (Observable<Swift.Error>) -> TriggerObservable)
-        -> Observable<Element> {
-        RetryWhenSequence(sources: InfiniteSequence(repeatedValue: self.asObservable()), notificationHandler: notificationHandler)
-    }
+    } 
 }
 
 final private class RetryTriggerSink<Sequence: Swift.Sequence, Observer: ObserverType, TriggerObservable: ObservableType, Error>

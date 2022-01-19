@@ -51,50 +51,7 @@ extension ObservableType {
         -> Observable<Element> {
         take(until: { try !predicate($0) }, behavior: behavior)
     }
-
-    /**
-     Returns the elements from the source observable sequence until the other observable sequence produces an element.
-
-     - seealso: [takeUntil operator on reactivex.io](http://reactivex.io/documentation/operators/takeuntil.html)
-
-     - parameter other: Observable sequence that terminates propagation of elements of the source sequence.
-     - returns: An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
-     */
-    @available(*, deprecated, renamed: "take(until:)")
-    public func takeUntil<Source: ObservableType>(_ other: Source)
-        -> Observable<Element> {
-        take(until: other)
-    }
-
-    /**
-     Returns elements from an observable sequence until the specified condition is true.
-
-     - seealso: [takeUntil operator on reactivex.io](http://reactivex.io/documentation/operators/takeuntil.html)
-
-     - parameter behavior: Whether or not to include the last element matching the predicate.
-     - parameter predicate: A function to test each element for a condition.
-     - returns: An observable sequence that contains the elements from the input sequence that occur before the element at which the test passes.
-     */
-    @available(*, deprecated, renamed: "take(until:behavior:)")
-    public func takeUntil(_ behavior: TakeBehavior,
-                          predicate: @escaping (Element) throws -> Bool)
-        -> Observable<Element> {
-        take(until: predicate, behavior: behavior)
-    }
-
-    /**
-     Returns elements from an observable sequence as long as a specified condition is true.
-
-     - seealso: [takeWhile operator on reactivex.io](http://reactivex.io/documentation/operators/takewhile.html)
-
-     - parameter predicate: A function to test each element for a condition.
-     - returns: An observable sequence that contains the elements from the input sequence that occur before the element at which the test no longer passes.
-     */
-    @available(*, deprecated, renamed: "take(while:)")
-    public func takeWhile(_ predicate: @escaping (Element) throws -> Bool)
-        -> Observable<Element> {
-        take(until: { try !predicate($0) }, behavior: .exclusive)
-    }
+  
 }
 
 /// Behaviors for the take operator family.

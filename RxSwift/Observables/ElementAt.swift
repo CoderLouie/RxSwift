@@ -6,20 +6,7 @@
 //  Copyright © 2015 Krunoslav Zaher. All rights reserved.
 //
 
-extension ObservableType {
-    /**
-     Returns a sequence emitting only element _n_ emitted by an Observable
-
-     - seealso: [elementAt operator on reactivex.io](http://reactivex.io/documentation/operators/elementat.html)
-
-     - parameter index: The index of the required element (starting from 0).
-     - returns: An observable sequence that emits the desired element as its own sole emission.
-     */
-    @available(*, deprecated, renamed: "element(at:)")
-    public func elementAt(_ index: Int)
-        -> Observable<Element> {
-        element(at: index)
-    }
+extension ObservableType { 
 
     /**
      Returns a sequence emitting only element _n_ emitted by an Observable

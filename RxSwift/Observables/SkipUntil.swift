@@ -18,21 +18,7 @@ extension ObservableType {
     public func skip<Source: ObservableType>(until other: Source)
         -> Observable<Element> {
         SkipUntil(source: self.asObservable(), other: other.asObservable())
-    }
-
-    /**
-     Returns the elements from the source observable sequence that are emitted after the other observable sequence produces an element.
-
-     - seealso: [skipUntil operator on reactivex.io](http://reactivex.io/documentation/operators/skipuntil.html)
-
-     - parameter other: Observable sequence that starts propagation of elements of the source sequence.
-     - returns: An observable sequence containing the elements of the source sequence that are emitted after the other sequence emits an item.
-     */
-    @available(*, deprecated, renamed: "skip(until:)")
-    public func skipUntil<Source: ObservableType>(_ other: Source)
-        -> Observable<Element> {
-        skip(until: other)
-    }
+    } 
 }
 
 final private class SkipUntilSinkOther<Other, Observer: ObserverType>

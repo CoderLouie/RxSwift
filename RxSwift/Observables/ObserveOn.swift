@@ -27,23 +27,6 @@ extension ObservableType {
         return ObserveOnSerialDispatchQueue(source: self.asObservable(),
                                             scheduler: serialScheduler)
     }
-
-    /**
-     Wraps the source sequence in order to run its observer callbacks on the specified scheduler.
-
-     This only invokes observer callbacks on a `scheduler`. In case the subscription and/or unsubscription
-     actions have side-effects that require to be run on a scheduler, use `subscribeOn`.
-
-     - seealso: [observeOn operator on reactivex.io](http://reactivex.io/documentation/operators/observeon.html)
-
-     - parameter scheduler: Scheduler to notify observers on.
-     - returns: The source sequence whose observations happen on the specified scheduler.
-     */
-    @available(*, deprecated, renamed: "observe(on:)")
-    public func observeOn(_ scheduler: ImmediateSchedulerType)
-        -> Observable<Element> {
-        observe(on: scheduler)
-    }
 }
 
 final private class ObserveOn<Element>: Producer<Element> {

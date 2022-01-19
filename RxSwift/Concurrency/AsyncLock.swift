@@ -28,8 +28,7 @@ final class AsyncLock<I: InvocableType>
 
     private var isExecuting: Bool = false
     private var hasFaulted: Bool = false
-
-    // lock {
+ 
     func lock() {
         self._lock.lock()
     }
@@ -37,7 +36,6 @@ final class AsyncLock<I: InvocableType>
     func unlock() {
         self._lock.unlock()
     }
-    // }
 
     private func enqueue(_ action: I) -> I? {
         self.lock(); defer { self.unlock() }

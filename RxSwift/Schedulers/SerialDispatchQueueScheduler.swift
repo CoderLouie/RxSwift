@@ -31,9 +31,7 @@ public class SerialDispatchQueueScheduler : SchedulerType {
     public typealias Time = Date
     
     /// - returns: Current time.
-    public var now : Date {
-        Date()
-    }
+    public var now: Date { Date() }
 
     let configuration: DispatchQueueConfiguration
     
@@ -43,7 +41,7 @@ public class SerialDispatchQueueScheduler : SchedulerType {
     - parameter serialQueue: Target dispatch queue.
     - parameter leeway: The amount of time, in nanoseconds, that the system will defer the timer.
     */
-    init(serialQueue: DispatchQueue, leeway: DispatchTimeInterval = DispatchTimeInterval.nanoseconds(0)) {
+    init(serialQueue: DispatchQueue, leeway: DispatchTimeInterval = .nanoseconds(0)) {
         self.configuration = DispatchQueueConfiguration(queue: serialQueue, leeway: leeway)
     }
 
@@ -56,7 +54,7 @@ public class SerialDispatchQueueScheduler : SchedulerType {
     - parameter serialQueueConfiguration: Additional configuration of internal serial dispatch queue.
     - parameter leeway: The amount of time, in nanoseconds, that the system will defer the timer.
     */
-    public convenience init(internalSerialQueueName: String, serialQueueConfiguration: ((DispatchQueue) -> Void)? = nil, leeway: DispatchTimeInterval = DispatchTimeInterval.nanoseconds(0)) {
+    public convenience init(internalSerialQueueName: String, serialQueueConfiguration: ((DispatchQueue) -> Void)? = nil, leeway: DispatchTimeInterval = .nanoseconds(0)) {
         let queue = DispatchQueue(label: internalSerialQueueName, attributes: [])
         serialQueueConfiguration?(queue)
         self.init(serialQueue: queue, leeway: leeway)
@@ -69,7 +67,7 @@ public class SerialDispatchQueueScheduler : SchedulerType {
     - parameter internalSerialQueueName: Name of internal serial dispatch queue proxy.
     - parameter leeway: The amount of time, in nanoseconds, that the system will defer the timer.
     */
-    public convenience init(queue: DispatchQueue, internalSerialQueueName: String, leeway: DispatchTimeInterval = DispatchTimeInterval.nanoseconds(0)) {
+    public convenience init(queue: DispatchQueue, internalSerialQueueName: String, leeway: DispatchTimeInterval = .nanoseconds(0)) {
         // Swift 3.0 IUO
         let serialQueue = DispatchQueue(label: internalSerialQueueName,
                                         attributes: [],
@@ -85,7 +83,7 @@ public class SerialDispatchQueueScheduler : SchedulerType {
      - parameter leeway: The amount of time, in nanoseconds, that the system will defer the timer.
      */
     @available(macOS 10.10, *)
-    public convenience init(qos: DispatchQoS, internalSerialQueueName: String = "rx.global_dispatch_queue.serial", leeway: DispatchTimeInterval = DispatchTimeInterval.nanoseconds(0)) {
+    public convenience init(qos: DispatchQoS, internalSerialQueueName: String = "rx.global_dispatch_queue.serial", leeway: DispatchTimeInterval = .nanoseconds(0)) {
         self.init(queue: DispatchQueue.global(qos: qos.qosClass), internalSerialQueueName: internalSerialQueueName, leeway: leeway)
     }
     

@@ -19,9 +19,7 @@ public typealias RxTime = Date
 public protocol SchedulerType: ImmediateSchedulerType {
 
     /// - returns: Current time.
-    var now : RxTime {
-        get
-    }
+    var now: RxTime { get }
 
     /**
     Schedules an action to be executed.

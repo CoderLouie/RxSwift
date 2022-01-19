@@ -14,8 +14,10 @@ Abstracts work that needs to be performed on `MainThread`. In case `schedule` me
 
 This scheduler is optimized for `subscribeOn` operator. If you want to observe observable sequence elements on main thread using `observeOn` operator,
 `MainScheduler` is more suitable for that purpose.
+ 
+ 订阅的过程不存在并发的情况，所以可以忽略线程安全的问题。
 */
-public final class ConcurrentMainScheduler : SchedulerType {
+public final class ConcurrentMainScheduler: SchedulerType {
     public typealias TimeInterval = Foundation.TimeInterval
     public typealias Time = Date
 
@@ -23,9 +25,7 @@ public final class ConcurrentMainScheduler : SchedulerType {
     private let mainQueue: DispatchQueue
 
     /// - returns: Current time.
-    public var now: Date {
-        self.mainScheduler.now as Date
-    }
+    public var now: Date { self.mainScheduler.now }
 
     private init(mainScheduler: MainScheduler) {
         self.mainQueue = DispatchQueue.main
