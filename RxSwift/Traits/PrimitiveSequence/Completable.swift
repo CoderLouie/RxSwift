@@ -10,6 +10,10 @@
 import Foundation
 #endif
 
+/*
+ 要么只能产生一个 completed 事件，要么产生一个 error 事件。
+ 适用于那种你只关心任务是否完成，而不需要在意任务返回值的情况。它和 Observable<Void> 有点相似。
+ */
 /// Sequence containing 0 elements
 public enum CompletableTrait { }
 /// Represents a push style sequence containing 0 elements.

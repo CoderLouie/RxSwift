@@ -10,6 +10,10 @@
 import Foundation
 #endif
 
+/*
+ 要么只能发出一个元素，要么产生一个 completed 事件，要么产生一个 error 事件。
+ 如果你遇到那种可能需要发出一个元素，又可能不需要发出时，就可以使用 Maybe。
+ */
 /// Sequence containing 0 or 1 elements
 public enum MaybeTrait { }
 /// Represents a push style sequence containing 0 or 1 element.
@@ -369,5 +373,5 @@ extension PrimitiveSequenceType where Trait == MaybeTrait {
     public func catchAndReturn(_ element: Element)
         -> PrimitiveSequence<Trait, Element> {
         PrimitiveSequence(raw: self.primitiveSequence.source.catchAndReturn(element))
-    } 
+    }
 }

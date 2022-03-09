@@ -10,6 +10,11 @@
 import Foundation
 #endif
 
+/*
+ 要么只能发出一个元素，要么产生一个 error 事件。
+ 可以用 Single 来描述任何只有一个元素的序列。常用于网络请求返回结果
+ */
+
 /// Sequence containing exactly 1 element
 public enum SingleTrait { }
 /// Represents a push style sequence containing 1 element.
