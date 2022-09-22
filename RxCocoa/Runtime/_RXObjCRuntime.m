@@ -862,15 +862,18 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
             return nil;
         }
 
-        NSString *methodEncoding = RX_method_encoding(instanceMethod);
-        RXInterceptWithOptimizedObserver optimizedIntercept = optimizedObserversByMethodEncoding[methodEncoding];
-
         if (!RX_method_has_supported_return_type(instanceMethod)) {
             RX_THROW_ERROR([NSError errorWithDomain:RXObjCRuntimeErrorDomain
                                                code:RXObjCRuntimeErrorObservingMessagesWithUnsupportedReturnType
                                            userInfo:nil], nil);
         }
-
+        
+        NSString *methodEncoding = RX_method_encoding(instanceMethod);
+        // 这些Intercept都是在+load方法中被载入的
+        RXInterceptWithOptimizedObserver optimizedIntercept = optimizedObserversByMethodEncoding[methodEncoding];
+/*
+ 因为OC的消息转发环节，不是直接调用方法的实现，而是绕了一个圈子，所以效率上肯定是有折扣的，所以RXSwift中间又加了一层优化机制
+ */
         // optimized interception method
         if (optimizedIntercept != nil) {
             IMP interceptorIMPForSelector = [self interceptorImplementationForSelector:selector forClass:swizzlingImplementorClass];
@@ -879,9 +882,10 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
             }
 
             /*
-             -swizzle_void_id:selector:error:
              将原方法新增或者替换一个block生成的方法实现，
              这个block中，首先根据_RX_namespace_selector来找RXMessageSentObserver钩子对象，获取到钩子之后，调用钩子的-(void)messageSentWithParameters:(NSArray*)parameters方法，再调用msgSend(&superInfo, selector, id_0)或者originalImplementationTyped(self, selector, id_0)来保持现场完整性
+             可参考方法
+              -swizzle_void_id:selector:error:
              */
             if (!optimizedIntercept(self, swizzlingImplementorClass, selector, error)) {
                 return nil;
@@ -894,8 +898,7 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
         } // default fallback to observing by forwarding messages
         else {
             if ([self forwardingSelector:selector forClass:swizzlingImplementorClass]) {
-                // 直接进入消息转发阶段，少了消息发送和动态方法解析，
-                // 提高效率
+                // 如果已经标记过消息转发，直接进入消息转发
                 return RX_default_target_implementation();
             }
 
@@ -917,6 +920,9 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
                                    userInfo:nil], nil);
 }
 
+/*
+ 给类B的对象taregt绑定一个_RX_namespace_B类，并交换class方法的实现
+ */
 -(Class __nullable)prepareTargetClassForObserving:(id __nonnull)target error:(NSErrorParam)error {
     Class swizzlingClass = objc_getAssociatedObject(target, &RxSwizzlingTargetClassKey);
     if (swizzlingClass != nil) {
@@ -1010,6 +1016,10 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
     [forwardedSelectors addObject:SEL_VALUE(selector)];
 }
 
+/*
+ 先交换forwardInvocation(最重要)、methodSignature、respondsToSelector
+ 然后添加_RX_namespace_selector方法，并且把_RX_namespace_selector的实现设置为原selector的实现，然后再把原selector的实现设置为_objc_msgForward,_objc_msgForward是runtime的消息转发环节的入口，这样当使用者调用[a selector]是，就进入了OC runtime的消息转发环节；
+ */
 -(BOOL)observeByForwardingMessages:(Class __nonnull)swizzlingImplementorClass
                           selector:(SEL)selector
                             target:(id __nonnull)target
@@ -1023,7 +1033,6 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
 #if TRACE_RESOURCES
     atomic_fetch_add(&numberOfForwardedMethods, 1);
 #endif
-    SEL rxSelector = RX_selector(selector);
 
     Method instanceMethod = class_getInstanceMethod(swizzlingImplementorClass, selector);
     ALWAYS(instanceMethod != nil, @"Instance method is nil");
@@ -1041,6 +1050,7 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
                                        userInfo:nil], NO);
     }
 
+    SEL rxSelector = RX_selector(selector);
     if (!class_addMethod(swizzlingImplementorClass, rxSelector, implementation, methodEncoding)) {
         RX_THROW_ERROR([NSError errorWithDomain:RXObjCRuntimeErrorDomain
                                            code:RXObjCRuntimeErrorSavingOriginalForwardingMethodFailed
@@ -1084,6 +1094,7 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
     dynamicFakeSubclass = objc_allocateClassPair(class, dynamicFakeSubclassNameRaw, 0);
     ALWAYS(dynamicFakeSubclass != nil, @"Class not generated");
 
+    /// 交换class方法
     if (![self swizzleClass:dynamicFakeSubclass toActAs:class error:error]) {
         return nil;
     }
@@ -1096,6 +1107,9 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
     return dynamicFakeSubclass;
 }
 
+/*
+ 交换forwardInvocation(最重要)、methodSignature、respondsToSelector
+ */
 -(BOOL)ensureForwardingMethodsAreSwizzled:(Class __nonnull)class error:(NSErrorParam)error {
     NSValue *classValue = CLASS_VALUE(class);
     if ([self.classesThatSupportObservingByForwarding containsObject:classValue]) {
