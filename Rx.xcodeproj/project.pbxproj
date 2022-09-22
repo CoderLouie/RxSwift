@@ -2371,11 +2371,11 @@
 		C89AB22B1DAAC3A60065FBE6 /* Runtime */ = {
 			isa = PBXGroup;
 			children = (
-				C89AB2541DAACC580065FBE6 /* include */,
 				C89AB22D1DAAC3A60065FBE6 /* _RX.m */,
 				C89AB22F1DAAC3A60065FBE6 /* _RXDelegateProxy.m */,
 				C89AB2311DAAC3A60065FBE6 /* _RXKVOObserver.m */,
 				C89AB2331DAAC3A60065FBE6 /* _RXObjCRuntime.m */,
+				C89AB2541DAACC580065FBE6 /* include */,
 			);
 			path = Runtime;
 			sourceTree = "<group>";

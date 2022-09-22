@@ -84,6 +84,7 @@ void * __nonnull RX_reference_from_selector(SEL __nonnull selector);
 
 @end
 
+/// https://www.jianshu.com/p/77acd1bba906
 /// Ensures interceptor is installed on target object.
 IMP __nullable RX_ensure_observing(id __nonnull target, SEL __nonnull selector, NSError *__autoreleasing __nullable * __nullable error);
 

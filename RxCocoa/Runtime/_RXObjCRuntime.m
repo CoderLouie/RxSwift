@@ -214,6 +214,7 @@ void * __nonnull RX_reference_from_selector(SEL __nonnull selector) {
     return selector;
 }
 
+// MARK: - 非常重要的方法
 static BOOL RX_forward_invocation(id __nonnull __unsafe_unretained self, NSInvocation *invocation) {
     SEL originalSelector = RX_selector(invocation.selector);
 
@@ -474,14 +475,60 @@ method_prototype                                                                
 
 @implementation RXObjCRuntime (InfrastructureMethods)
 
-SWIZZLE_INFRASTRUCTURE_METHOD(
-    void,
-    swizzleForwardInvocation,
-    ,
-    @selector(forwardInvocation:),
-    FORWARD_BODY,
-    NSInvocationRef
-)
+//SWIZZLE_INFRASTRUCTURE_METHOD(
+//    void,
+//    swizzleForwardInvocation,
+//    ,
+//    @selector(forwardInvocation:),
+//    FORWARD_BODY,
+//    NSInvocationRef
+//)
+// MARK: - 非常重要的方法
+-(BOOL)swizzleForwardInvocation:(Class _Nonnull)class error:(NSErrorParam)error {
+    SEL selector = @selector(forwardInvocation:);
+    
+    __unused SEL rxSelector = RX_selector(selector);
+    
+    IMP (^newImplementationGenerator)(void) = ^() {
+        __block IMP thisIMP = NULL;
+        id newImplementation = ^void(__unsafe_unretained id self , NSInvocationRef NSInvocationRef_0) {
+            if (RX_forward_invocation(self, NSInvocationRef_0)) { return; }
+            struct objc_super superInfo = {
+                .receiver = self,
+                .super_class = class_getSuperclass(class)
+            };
+            
+            void (*msgSend)(struct objc_super *, SEL , NSInvocationRef NSInvocationRef_0) = (__typeof__(msgSend))objc_msgSendSuper;
+            @try {
+                return msgSend(&superInfo, selector , NSInvocationRef_0);
+            } @finally { }
+        };
+        thisIMP = imp_implementationWithBlock(newImplementation);
+        return thisIMP;
+    };
+    
+    IMP (^replacementImplementationGenerator)(IMP) = ^(IMP originalImplementation) {
+        __block void (*originalImplementationTyped)(__unsafe_unretained id, SEL , NSInvocationRef NSInvocationRef_0) = (__typeof__(originalImplementationTyped))(originalImplementation);
+        
+        __block IMP thisIMP = nil;
+        
+        id implementationReplacement = ^void(__unsafe_unretained id self , NSInvocationRef NSInvocationRef_0 ) {
+            if (RX_forward_invocation(self, NSInvocationRef_0)) { return; }
+            @try {
+                return originalImplementationTyped(self, selector, NSInvocationRef_0);
+            } @finally { }
+        };
+        thisIMP = imp_implementationWithBlock(implementationReplacement);
+        return thisIMP;
+    };
+    
+    return [self ensureSwizzledSelector:selector
+                                ofClass:class
+             newImplementationGenerator:newImplementationGenerator
+     replacementImplementationGenerator:replacementImplementationGenerator
+                                  error:error];
+}
+
 SWIZZLE_INFRASTRUCTURE_METHOD(
     BOOL,
     swizzleRespondsToSelector,
@@ -490,13 +537,34 @@ SWIZZLE_INFRASTRUCTURE_METHOD(
     RESPONDS_TO_SELECTOR_BODY,
     SEL
 )
-SWIZZLE_INFRASTRUCTURE_METHOD(
-    Class __nonnull,
-    swizzleClass,
-    toActAs:(Class)actAsClass,
-    @selector(class),
-    CLASS_BODY
-)
+//SWIZZLE_INFRASTRUCTURE_METHOD(
+//    Class __nonnull,
+//    swizzleClass,
+//    toActAs:(Class)actAsClass,
+//    @selector(class),
+//    CLASS_BODY
+//)
+-(BOOL)swizzleClass:(Class _Nonnull)class toActAs:(Class)actAsClass error:(NSErrorParam)error {
+    SEL selector = @selector(class);
+    __unused SEL rxSelector = RX_selector(selector);
+    IMP (^newImplementationGenerator)(void) = ^() {
+        __block IMP thisIMP = NULL;
+        id newImplementation = ^Class _Nonnull(__unsafe_unretained id self ) {
+            return actAsClass;
+        };
+        thisIMP = imp_implementationWithBlock(newImplementation); return thisIMP;
+    };
+    IMP (^replacementImplementationGenerator)(IMP) = ^(IMP originalImplementation) {
+        __block Class _Nonnull (*originalImplementationTyped)(__unsafe_unretained id, SEL ) = (__typeof__(originalImplementationTyped))(originalImplementation);
+        __block IMP thisIMP = NULL;
+        id implementationReplacement = ^Class _Nonnull(__unsafe_unretained id self ) {
+            return actAsClass; 
+        };
+        thisIMP = imp_implementationWithBlock(implementationReplacement);
+        return thisIMP;
+    };
+    return [self ensureSwizzledSelector:selector ofClass:class newImplementationGenerator:newImplementationGenerator replacementImplementationGenerator:replacementImplementationGenerator error:error];
+}
 SWIZZLE_INFRASTRUCTURE_METHOD(
     NSMethodSignatureRef,
     swizzleMethodSignatureForSelector,
@@ -505,13 +573,59 @@ SWIZZLE_INFRASTRUCTURE_METHOD(
     METHOD_SIGNATURE_FOR_SELECTOR_BODY,
     SEL
 )
-SWIZZLE_INFRASTRUCTURE_METHOD(
-    void,
-    swizzleDeallocating,
-    ,
-    deallocSelector,
-    DEALLOCATING_BODY
-)
+//SWIZZLE_INFRASTRUCTURE_METHOD(
+//    void,
+//    swizzleDeallocating,
+//    ,
+//    deallocSelector,
+//    DEALLOCATING_BODY
+//)
+-(BOOL)swizzleDeallocating:(Class _Nonnull)class error:(NSErrorParam)error {
+    SEL selector = deallocSelector;
+    __unused SEL rxSelector = RX_selector(selector);
+    IMP (^newImplementationGenerator)(void) = ^() {
+        __block IMP thisIMP = NULL;
+        id newImplementation = ^void(__unsafe_unretained id self) {
+            id<RXDeallocatingObserver> observer = objc_getAssociatedObject(self, rxSelector);
+            if (observer != nil &&
+                observer.targetImplementation == thisIMP) {
+                [observer deallocating];
+            }
+            struct objc_super superInfo = {
+                .receiver = self,
+                .super_class = class_getSuperclass(class)
+            };
+            void (*msgSend)(struct objc_super *, SEL) = (__typeof__(msgSend))objc_msgSendSuper;
+            @try {
+                return msgSend(&superInfo, selector );
+            } @finally { }
+        };
+        thisIMP = imp_implementationWithBlock(newImplementation);
+        return thisIMP;
+    };
+    IMP (^replacementImplementationGenerator)(IMP) = ^(IMP originalImplementation) {
+        __block void (*originalImplementationTyped)(__unsafe_unretained id, SEL) = (__typeof__(originalImplementationTyped))(originalImplementation);
+        __block IMP thisIMP = NULL;
+        id implementationReplacement = ^void(__unsafe_unretained id self) {
+            id<RXDeallocatingObserver> observer = objc_getAssociatedObject(self, rxSelector);
+            if (observer != nil &&
+                observer.targetImplementation == thisIMP) {
+                [observer deallocating];
+            }
+            @try {
+                return originalImplementationTyped(self, selector );
+            } @finally { }
+        };
+        thisIMP = imp_implementationWithBlock(implementationReplacement);
+        return thisIMP;
+        
+    };
+    return [self ensureSwizzledSelector:selector
+                                ofClass:class
+             newImplementationGenerator:newImplementationGenerator
+     replacementImplementationGenerator:replacementImplementationGenerator
+                                  error:error];
+}
 
 @end
 
@@ -525,7 +639,58 @@ SWIZZLE_INFRASTRUCTURE_METHOD(
 
 SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void)
 
-SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, id)
+// MARK: - 非常重要的方法
+//SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, id)
++(void)example_void_id:(id)id_0 {}
+-(BOOL)swizzle_void_id:(Class _Nonnull)class selector:(SEL)selector error:(NSErrorParam)error {
+    __unused SEL rxSelector = RX_selector(selector);
+    
+    IMP (^newImplementationGenerator)(void) = ^() {
+        __block IMP thisIMP = NULL;
+        id newImplementation = ^void(__unsafe_unretained id self , id id_0) {
+            id<RXMessageSentObserver> observer = objc_getAssociatedObject(self, rxSelector);
+            if (observer != nil &&
+                observer.targetImplementation == thisIMP) {
+                [observer messageSentWithArguments:@[((id_0) ?: [NSNull null])]];
+            }
+            struct objc_super superInfo = {
+                .receiver = self,
+                .super_class = class_getSuperclass(class)
+            };
+            void (*msgSend)(struct objc_super *, SEL , id id_0) = (__typeof__(msgSend))objc_msgSendSuper;
+            @try {
+                return msgSend(&superInfo, selector , id_0);
+            } @finally {
+                if (observer != nil &&
+                    observer.targetImplementation == thisIMP) {
+                    [observer methodInvokedWithArguments:@[((id_0) ?: [NSNull null])]];
+                }
+            }
+        };
+        thisIMP = imp_implementationWithBlock(newImplementation);
+        return thisIMP;
+    };
+    IMP (^replacementImplementationGenerator)(IMP) = ^(IMP originalImplementation) {
+        __block void (*originalImplementationTyped)(__unsafe_unretained id, SEL , id id_0) = (__typeof__(originalImplementationTyped))(originalImplementation);
+        __block IMP thisIMP = NULL;
+        id implementationReplacement = ^void(__unsafe_unretained id self , id id_0 ) {
+            id<RXMessageSentObserver> observer = objc_getAssociatedObject(self, rxSelector);
+            if (observer != ((void *)0) && observer.targetImplementation == thisIMP) {
+                [observer messageSentWithArguments:@[((id_0) ?: [NSNull null])]]; }
+            @try {
+                return originalImplementationTyped(self, selector, id_0);
+            } @finally {
+                if (observer != nil &&
+                    observer.targetImplementation == thisIMP) {
+                    [observer methodInvokedWithArguments:@[((id_0) ?: [NSNull null])]];
+                }
+            }
+        };
+        thisIMP = imp_implementationWithBlock(implementationReplacement);
+        return thisIMP;
+    };
+    return [self ensureSwizzledSelector:selector ofClass:class newImplementationGenerator:newImplementationGenerator replacementImplementationGenerator:replacementImplementationGenerator error:error];
+}
 SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, char)
 SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, short)
 SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, int)
@@ -556,7 +721,12 @@ SWIZZLE_OBSERVE_METHOD_DEFINITIONS(void, id, SEL)
 +(void)load {
     SWIZZLE_OBSERVE_METHOD_BODY(void)
 
-    SWIZZLE_OBSERVE_METHOD_BODY(void, id)
+//    SWIZZLE_OBSERVE_METHOD_BODY(void, id)
+    __unused SEL exampleSelector_void_id = @selector(example_void_id:);
+    [self registerOptimizedObserver:^BOOL(RXObjCRuntime * _Nonnull self, Class _Nonnull class, SEL _Nonnull selector, NSErrorParam error) {
+        return [self swizzle_void_id:class selector:selector error:error];
+    } encodedAs:exampleSelector_void_id];
+    
     SWIZZLE_OBSERVE_METHOD_BODY(void, char)
     SWIZZLE_OBSERVE_METHOD_BODY(void, short)
     SWIZZLE_OBSERVE_METHOD_BODY(void, int)
@@ -686,8 +856,7 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
         if (interceptorIMPForSelector != nil) {
             return interceptorIMPForSelector;
         }
-    }
-    else {
+    } else {
         Class __nullable swizzlingImplementorClass = [self prepareTargetClassForObserving:target error:error];
         if (swizzlingImplementorClass == nil) {
             return nil;
@@ -709,6 +878,11 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
                 return interceptorIMPForSelector;
             }
 
+            /*
+             -swizzle_void_id:selector:error:
+             将原方法新增或者替换一个block生成的方法实现，
+             这个block中，首先根据_RX_namespace_selector来找RXMessageSentObserver钩子对象，获取到钩子之后，调用钩子的-(void)messageSentWithParameters:(NSArray*)parameters方法，再调用msgSend(&superInfo, selector, id_0)或者originalImplementationTyped(self, selector, id_0)来保持现场完整性
+             */
             if (!optimizedIntercept(self, swizzlingImplementorClass, selector, error)) {
                 return nil;
             }
@@ -717,10 +891,11 @@ static NSMutableDictionary<NSString *, RXInterceptWithOptimizedObserver> *optimi
             if (interceptorIMPForSelector != nil) {
                 return interceptorIMPForSelector;
             }
-        }
-        // default fallback to observing by forwarding messages
+        } // default fallback to observing by forwarding messages
         else {
             if ([self forwardingSelector:selector forClass:swizzlingImplementorClass]) {
+                // 直接进入消息转发阶段，少了消息发送和动态方法解析，
+                // 提高效率
                 return RX_default_target_implementation();
             }
 

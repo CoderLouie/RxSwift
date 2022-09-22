@@ -266,71 +266,69 @@ extension Reactive where Base: AnyObject {
 
 #if !DISABLE_SWIZZLING && !os(Linux)
 
-    private protocol MessageInterceptorSubject: AnyObject {
-        init()
+private protocol MessageInterceptorSubject: AnyObject {
+    init()
 
-        var isActive: Bool {
-            get
-        }
+    var isActive: Bool { get }
 
-        var targetImplementation: IMP { get set }
+    var targetImplementation: IMP { get set }
+}
+
+private final class DeallocatingProxy
+    : MessageInterceptorSubject
+    , RXDeallocatingObserver {
+    typealias Element = ()
+
+    let messageSent = ReplaySubject<()>.create(bufferSize: 1)
+
+    @objc var targetImplementation: IMP = RX_default_target_implementation()
+
+    var isActive: Bool {
+        return self.targetImplementation != RX_default_target_implementation()
     }
 
-    private final class DeallocatingProxy
-        : MessageInterceptorSubject
-        , RXDeallocatingObserver {
-        typealias Element = ()
-
-        let messageSent = ReplaySubject<()>.create(bufferSize: 1)
-
-        @objc var targetImplementation: IMP = RX_default_target_implementation()
-
-        var isActive: Bool {
-            return self.targetImplementation != RX_default_target_implementation()
-        }
-
-        init() {
-        }
-
-        @objc func deallocating() {
-            self.messageSent.on(.next(()))
-        }
-
-        deinit {
-            self.messageSent.on(.completed)
-        }
+    init() {
     }
 
-    private final class MessageSentProxy
-        : MessageInterceptorSubject
-        , RXMessageSentObserver {
-        typealias Element = [AnyObject]
-
-        let messageSent = PublishSubject<[Any]>()
-        let methodInvoked = PublishSubject<[Any]>()
-
-        @objc var targetImplementation: IMP = RX_default_target_implementation()
-
-        var isActive: Bool {
-            return self.targetImplementation != RX_default_target_implementation()
-        }
-
-        init() {
-        }
-
-        @objc func messageSent(withArguments arguments: [Any]) {
-            self.messageSent.on(.next(arguments))
-        }
-
-        @objc func methodInvoked(withArguments arguments: [Any]) {
-            self.methodInvoked.on(.next(arguments))
-        }
-
-        deinit {
-            self.messageSent.on(.completed)
-            self.methodInvoked.on(.completed)
-        }
+    @objc func deallocating() {
+        self.messageSent.on(.next(()))
     }
+
+    deinit {
+        self.messageSent.on(.completed)
+    }
+}
+
+private final class MessageSentProxy
+    : MessageInterceptorSubject
+    , RXMessageSentObserver {
+    typealias Element = [AnyObject]
+
+    let messageSent = PublishSubject<[Any]>()
+    let methodInvoked = PublishSubject<[Any]>()
+
+    @objc var targetImplementation: IMP = RX_default_target_implementation()
+
+    var isActive: Bool {
+        return self.targetImplementation != RX_default_target_implementation()
+    }
+
+    init() {
+    }
+
+    @objc func messageSent(withArguments arguments: [Any]) {
+        self.messageSent.on(.next(arguments))
+    }
+
+    @objc func methodInvoked(withArguments arguments: [Any]) {
+        self.methodInvoked.on(.next(arguments))
+    }
+
+    deinit {
+        self.messageSent.on(.completed)
+        self.methodInvoked.on(.completed)
+    }
+}
 
 #endif
 
@@ -446,6 +444,7 @@ private extension KeyValueObservingOptions {
         let observable = observeWeaklyKeyPathFor(target, keyPathSections: components, options: options)
             .finishWithNilWhenDealloc(target)
 
+        // 包含 .initial
         if !options.isDisjoint(with: .initial) {
             return observable
         }
