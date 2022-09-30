@@ -40,6 +40,8 @@
 		B18F3BBC1BD92EC8000AAC79 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18F3BBB1BD92EC8000AAC79 /* Reachability.swift */; };
 		B18F3BBF1BD93DFF000AAC79 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18F3BBB1BD92EC8000AAC79 /* Reachability.swift */; };
 		B18F3BE21BDB2E8F000AAC79 /* ReachabilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18F3BE11BDB2E8F000AAC79 /* ReachabilityService.swift */; };
+		B6E1AF0C28E2F9C0005A7CBA /* MineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E1AF0B28E2F9C0005A7CBA /* MineViewController.swift */; };
+		B6E1AF0E28E2F9CF005A7CBA /* Mine.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6E1AF0D28E2F9CF005A7CBA /* Mine.storyboard */; };
 		C803973A1BD3E17D009D8B26 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80397391BD3E17D009D8B26 /* ActivityIndicator.swift */; };
 		C809E97A1BE6841C0058D948 /* Wireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = C809E9791BE6841C0058D948 /* Wireframe.swift */; };
 		C809E97D1BE697100058D948 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C809E97C1BE697100058D948 /* UIImage+Extensions.swift */; };
@@ -323,6 +325,8 @@
 		B1604CC81BE5BBFA002E1279 /* UIImageView+DownloadableImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+DownloadableImage.swift"; sourceTree = "<group>"; };
 		B18F3BBB1BD92EC8000AAC79 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		B18F3BE11BDB2E8F000AAC79 /* ReachabilityService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReachabilityService.swift; sourceTree = "<group>"; };
+		B6E1AF0B28E2F9C0005A7CBA /* MineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineViewController.swift; sourceTree = "<group>"; };
+		B6E1AF0D28E2F9CF005A7CBA /* Mine.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Mine.storyboard; sourceTree = "<group>"; };
 		C80397391BD3E17D009D8B26 /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		C809E9791BE6841C0058D948 /* Wireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wireframe.swift; sourceTree = "<group>"; };
 		C809E97C1BE697100058D948 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
@@ -538,6 +542,15 @@
 				C8D132141C42B54B00B59FFF /* UIImagePickerController+RxCreate.swift */,
 			);
 			path = ImagePicker;
+			sourceTree = "<group>";
+		};
+		B6E1AF0328E2F99E005A7CBA /* Mine */ = {
+			isa = PBXGroup;
+			children = (
+				B6E1AF0B28E2F9C0005A7CBA /* MineViewController.swift */,
+				B6E1AF0D28E2F9CF005A7CBA /* Mine.storyboard */,
+			);
+			path = Mine;
 			sourceTree = "<group>";
 		};
 		C81B39F21BC1C28400EF5A9F /* Products */ = {
@@ -786,9 +799,10 @@
 		C86E2F2E1AE5A0CA00C31024 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				C8BCD3E41C14A950005F1280 /* Numbers */,
+				B6E1AF0328E2F99E005A7CBA /* Mine */,
 				252C9F671F1410D600F5F951 /* UIPickerViewExample */,
 				8479BC6F1C3BCB4800FB8B54 /* ImagePicker */,
-				C8BCD3E41C14A950005F1280 /* Numbers */,
 				C8BCD3E81C14B015005F1280 /* SimpleValidation */,
 				0744CDEB1C4DB71300720FD2 /* GeolocationExample */,
 				C86E2F4C1AE5A10900C31024 /* GitHubSignup */,
@@ -1062,7 +1076,7 @@
 					};
 					C83366DC1AD0293800C668A7 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 2V65Z4JB29;
+						DevelopmentTeam = NW3KV7KHV6;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
@@ -1215,6 +1229,7 @@
 				AE51C1E11DE73660005BAF5F /* TableViewWithEditingCommands.storyboard in Resources */,
 				AE51C1D91DE73633005BAF5F /* SimpleTableViewExample.storyboard in Resources */,
 				AE51C1CB1DE735E3005BAF5F /* Calculator.storyboard in Resources */,
+				B6E1AF0E28E2F9CF005A7CBA /* Mine.storyboard in Resources */,
 				AE51C1DF1DE73655005BAF5F /* PartialUpdates.storyboard in Resources */,
 				AE51C1D21DE73608005BAF5F /* GitHubSignup1.storyboard in Resources */,
 			);
@@ -1292,6 +1307,7 @@
 				C864BADF1C3332F10083833C /* UIImageView+Extensions.swift in Sources */,
 				C82FF1391F93E84600BDB34D /* UI+SectionedViewType.swift in Sources */,
 				C8BCD3DF1C1480E9005F1280 /* Operators.swift in Sources */,
+				B6E1AF0C28E2F9C0005A7CBA /* MineViewController.swift in Sources */,
 				C843A0901C1CE39900CBA4BD /* GitHubSearchRepositoriesViewController.swift in Sources */,
 				C803973A1BD3E17D009D8B26 /* ActivityIndicator.swift in Sources */,
 				C82FF1241F93E84600BDB34D /* IdentifiableType.swift in Sources */,
@@ -1646,7 +1662,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2V65Z4JB29;
+				DEVELOPMENT_TEAM = NW3KV7KHV6;
 				INFOPLIST_FILE = "RxExample/Info-iOS.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1663,7 +1679,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2V65Z4JB29;
+				DEVELOPMENT_TEAM = NW3KV7KHV6;
 				INFOPLIST_FILE = "RxExample/Info-iOS.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1878,7 +1894,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2V65Z4JB29;
+				DEVELOPMENT_TEAM = NW3KV7KHV6;
 				INFOPLIST_FILE = "RxExample/Info-iOS.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

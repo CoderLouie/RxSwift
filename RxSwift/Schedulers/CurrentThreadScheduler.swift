@@ -51,10 +51,10 @@ public class CurrentThreadScheduler : ImmediateSchedulerType {
 
         return key.pointee
     }()
-
-    private static var scheduleInProgressSentinel: UnsafeRawPointer = { () -> UnsafeRawPointer in
-        return UnsafeRawPointer(UnsafeMutablePointer<Int>.allocate(capacity: 1))
-    }()
+    private static var scheduleInProgressSentinel = UnsafeRawPointer(UnsafeMutablePointer<Int>.allocate(capacity: 1))
+//    private static var scheduleInProgressSentinel: UnsafeRawPointer = { () -> UnsafeRawPointer in
+//        return UnsafeRawPointer(UnsafeMutablePointer<Int>.allocate(capacity: 1))
+//    }()
 
     static var queue : ScheduleQueue? {
         get {

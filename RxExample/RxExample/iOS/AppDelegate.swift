@@ -21,12 +21,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         RxImagePickerDelegateProxy.register { RxImagePickerDelegateProxy(imagePicker: $0) }
 
-        #if DEBUG
-        _ = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                print("Resource count \(RxSwift.Resources.total)")
-            })
-        #endif
+//        #if DEBUG
+//        _ = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+//            .subscribe(onNext: { _ in
+//                print("Resource count \(RxSwift.Resources.total)")
+//            })
+//        #endif
 
         return true
     }

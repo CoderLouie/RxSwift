@@ -18,4 +18,12 @@ import RxSwift
 
 class ViewController: OSViewController {
     var disposeBag = DisposeBag()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        print("[\(type(of: self)) viewDidLoad]")
+    }
+    deinit {
+        print("[\(type(of: self)) deinit]")
+    }
 }

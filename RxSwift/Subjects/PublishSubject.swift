@@ -31,7 +31,7 @@ public final class PublishSubject<Element>
     private var disposed = false
     private var observers = Observers()
     private var stopped = false
-    private var stoppedEvent = nil as Event<Element>?
+    private var stoppedEvent: Event<Element>? = nil
 
     #if DEBUG
         private let synchronizationTracker = SynchronizationTracker()
