@@ -32,7 +32,6 @@ final class Player {
 // MARK: - 六、Subject的使用
 extension NumbersViewController {
     func test_memory() {
-        
     }
 }
 // MARK: - 六、Subject的使用
@@ -521,6 +520,7 @@ extension NumbersViewController {
         }
     }
 }
+ 
 
 class NumbersViewController: ViewController {
     @IBOutlet weak var number1: UITextField!
@@ -532,6 +532,8 @@ class NumbersViewController: ViewController {
     @IBOutlet weak var label: UILabel!
     
     var name: String?
+    
+    let p = Person()
     
     @IBAction func test1ButtonClicked(_ sender: UIButton) {
         test1()
@@ -565,6 +567,17 @@ class NumbersViewController: ViewController {
 //        test_driver()
     }
     
+//    func test_finishWithNilWhenDealloc() -> Observable<AnyObject?> {
+//        let deallocating = p.rx.deallocating
+//
+//        return deallocating
+//            .map { _ in
+//                return Observable.just(nil)
+//            }
+//            .startWith(self.asObservable())
+//            .switchLatest()
+//    }
+
     func test_driver() {
         let ob = number1.rx.text.orEmpty
             .asDriver()
