@@ -15,10 +15,10 @@ extension NumbersViewController {
         test_48()
     }
     private func test2() {
-        test_523()
+        test_other2()
     }
     private func test3() {
-        test_65()
+        test_observerOn()
     }
 }
 
@@ -32,6 +32,98 @@ final class Player {
 // MARK: - 六、Subject的使用
 extension NumbersViewController {
     func test_memory() {
+        
+    }
+}
+// MARK: - 七、Subject的使用
+extension NumbersViewController {
+    func test_other3() {
+        traceResCount()
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+            DispatchQueue.main.after(1) {
+                obserber.onNext(3)
+                obserber.onCompleted()
+            }
+            return Disposables.create {
+                print("销毁释放了")
+            }
+        }
+        var disposable: Disposable?
+        disposable =  consume1(ob.observe(on: ConcurrentDispatchQueueScheduler(qos: .default)).map { "\($0)" })
+        traceResCount()
+        DispatchQueue.main.after(2) {
+            traceResCount()
+        }
+    }
+    func test_other21() {
+        traceResCount()
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+            DispatchQueue.main.after(1) {
+                obserber.onNext(3)
+                obserber.onCompleted()
+            }
+            return Disposables.create {
+                print("销毁释放了")
+            }
+        }
+        let dispose = consume1(ob)
+        traceResCount()
+//        dispose.dispose()
+        DispatchQueue.main.after(2) {
+            traceResCount()
+        }
+    }
+    func test_other2() {
+        traceResCount()
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+            obserber.onNext(3)
+            obserber.onCompleted()
+            return Disposables.create {
+                print("销毁释放了")
+            }
+        }
+        traceResCount()
+        let dispose = consume1(ob)
+        traceResCount()
+//        dispose.dispose()
+        DispatchQueue.main.async {
+            traceResCount()
+        }
+    }
+    func test_other1() {
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+            DispatchQueue.global().async {
+                obserber.onNext(3)
+            }
+            DispatchQueue.main.async {
+                obserber.onCompleted()
+            }
+            return Disposables.create()
+        }
+        consume(ob)
+    }
+    func test_observerOn() {
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+            obserber.onNext(3)
+            obserber.onCompleted()
+            return Disposables.create()
+        }
+        consume(ob.subscribe(on: ConcurrentDispatchQueueScheduler(qos: .default)).map { num in
+            return "发送了 \(num)"
+        }.observe(on: MainScheduler.instance))
+//        consume(ob.observe(on: ConcurrentDispatchQueueScheduler(qos: .default)).map { num in
+//            return "发送了 \(num)"
+//        }.observe(on: MainScheduler.instance))
     }
 }
 // MARK: - 六、Subject的使用
@@ -548,6 +640,17 @@ class NumbersViewController: ViewController {
     func delay(_ delay: Double, closure: @escaping () -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             closure()
+        }
+    }
+    func consume1<Element>(tag: String = "", _ observable: Observable<Element>) -> Disposable {
+        return observable.subscribe(onNext: { (text) in
+            print("\(tag)onNext: \(text)")
+        }, onError: { (error) in
+            print("\(tag)onError:\(error)")
+        }, onCompleted: {
+            print("\(tag)onCompleted")
+        }) {
+            print("\(tag)onDisposed")
         }
     }
     func consume<Element>(tag: String = "", _ observable: Observable<Element>) {

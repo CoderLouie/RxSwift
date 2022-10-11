@@ -6,6 +6,10 @@
 //  Copyright © 2015 Krunoslav Zaher. All rights reserved.
 //
 
+/*
+ 当接收到error或completed事件或disposes时，
+ 标记自身为停止状态，不再接收任何事件
+ */
 class ObserverBase<Element> : Disposable, ObserverType {
     private let isStopped = AtomicInt(0)
 

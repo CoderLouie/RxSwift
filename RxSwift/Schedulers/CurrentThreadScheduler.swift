@@ -41,7 +41,7 @@ public class CurrentThreadScheduler : ImmediateSchedulerType {
     /// The singleton instance of the current thread scheduler.
     public static let instance = CurrentThreadScheduler()
 
-    private static var isScheduleRequiredKey: pthread_key_t = { () -> pthread_key_t in
+    private static var isScheduleRequiredKey: pthread_key_t = {
         let key = UnsafeMutablePointer<pthread_key_t>.allocate(capacity: 1)
         defer { key.deallocate() }
                                                                
@@ -70,8 +70,8 @@ public class CurrentThreadScheduler : ImmediateSchedulerType {
         get {
             return pthread_getspecific(CurrentThreadScheduler.isScheduleRequiredKey) == nil
         }
-        set(isScheduleRequired) {
-            if pthread_setspecific(CurrentThreadScheduler.isScheduleRequiredKey, isScheduleRequired ? nil : scheduleInProgressSentinel) != 0 {
+        set {
+            if pthread_setspecific(CurrentThreadScheduler.isScheduleRequiredKey, newValue ? nil : scheduleInProgressSentinel) != 0 {
                 rxFatalError("pthread_setspecific failed")
             }
         }
