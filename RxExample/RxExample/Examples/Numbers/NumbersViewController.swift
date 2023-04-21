@@ -12,10 +12,10 @@ import RxCocoa
 
 extension NumbersViewController {
     private func test1() {
-        test_48()
+        test_59()
     }
     private func test2() {
-        test_other2()
+        test_other4()
     }
     private func test3() {
         test_observerOn()
@@ -37,6 +37,24 @@ extension NumbersViewController {
 }
 // MARK: - 七、Subject的使用
 extension NumbersViewController {
+    
+    func test_other4() {
+        //1. 创建序列
+        let ob = Observable<Int>.create { obserber -> Disposable in
+            // 3:发送信号
+//            obserber.onNext(3)
+            obserber.onError(RxError.timeout)
+            return Disposables.create()
+        }
+        let ob1 = Observable<String>.create { obserber -> Disposable in
+            // 3:发送信号
+            obserber.onNext("success")
+            obserber.onCompleted()
+            return Disposables.create()
+        }
+        consume(Observable.just(10).flatMap { _ in ob }.flatMap { _ in ob1 })
+    }
+    
     func test_other3() {
         traceResCount()
         //1. 创建序列
@@ -138,6 +156,7 @@ extension NumbersViewController {
         consume(tag: "第一次订阅", sub.asObservable())
         sub.accept(20)
         print(sub.value)
+        // 其实就是对BehaviorSubject的封装，不能发送error和complete事件，同时可以获取发送的value值
         /*
          2
          第一次订阅onNext: 2
@@ -155,6 +174,7 @@ extension NumbersViewController {
         sub.onNext(7)
         consume(tag: "第二次订阅", sub)
         sub.onCompleted()
+        // 只有当发送onCompleted事件时才会向所有订阅者发送最后一次保存的元素并结束序列
         /*
          第一次订阅onNext: 7
          第二次订阅onNext: 7
@@ -218,8 +238,17 @@ extension NumbersViewController {
 
 // MARK: - 五、高阶函数
 extension NumbersViewController {
-    func test_5() {
-        
+    func test_524() {
+        let ob = Observable<String>.create {
+            print("beging")
+            sleep(2)
+            $0.onNext("start")
+            $0.onCompleted()
+            return Disposables.create()
+        }.publish()
+        consume(tag: "第一次订阅", ob)
+        consume(tag: "第二次订阅", ob)
+        let _ = ob.connect()
     }
     
     func test_523() {
@@ -293,7 +322,7 @@ extension NumbersViewController {
     func test_518() {
         let sub1 = PublishSubject<Int>()
         let sub2 = PublishSubject<Int>()
-        consume(sub1.skip(until: sub2))
+        consume(sub1.skip(until: sub2))// sub2发出信号后，sub1才能发送信号，类似一个开关
         sub1.onNext(1)
         sub1.onNext(2)
         sub2.onNext(3)
@@ -304,7 +333,7 @@ extension NumbersViewController {
     func test_517() {
         consume(Observable.of(1,2,3,4,5).skip(1))
         // 2,3,4,5
-        consume(Observable.of(1,2,3,4,5).skip(while: {$0<4}))
+        consume(Observable.of(1,2,3,4,5).skip(while: {$0<4}))// 跳过符合条件的序列值
         // 4,5
     }
     func test_516() {
@@ -321,9 +350,9 @@ extension NumbersViewController {
         // 没有符合的
         consume(Observable.of(1,5,3,2,4).take(until: { $0 > 4 }))
         // 1
-        consume(Observable.of(5,3,2,4,1).take(while: { $0 > 2 }))
+        consume(Observable.of(5,3,2,4,1).take(while: { $0 > 2 }))// 一旦条件不满足就停止发送
         // 5,3
-        consume(Observable.of(1,2,3,4,5).take(until: { $0 > 4 }))
+        consume(Observable.of(1,2,3,4,5).take(until: { $0 > 4 }))// 一旦条件满足就停止发送
         // 1,2,3,4
     }
     func test_514() {
@@ -353,9 +382,16 @@ extension NumbersViewController {
         // 1, 3, 5
     }
     func test_59() {
-        consume(Observable.of(10,20,30,40).scan(2, accumulator: +))
+        let ob = Observable.of(10,20,30,40)
+        consume(ob.reduce(2, accumulator: +))
+        // 102
+        consume(ob.scan(2, accumulator: +))
         // 12, 32, 62, 102
     }
+    /*
+     latMap和flatMapLatest的区别是，当原序列有新的事件发生的时候，flatMapLast 会自动取消上一个事件的订阅，转到新的事件的订阅上面， flatMap则会订阅全部。
+     */
+    // MARK: flatMapLatest
     func test_58() {
         let player1 = Player(score: 20)
         let player2 = Player(score: 30)
@@ -383,7 +419,9 @@ extension NumbersViewController {
         relay.accept(player2)
         player2.relay.accept(60)
         player1.relay.accept(70)
-        // 20, 40, 50, 60, 70
+        player1.relay.accept(80)
+        player2.relay.accept(90)
+        // 20, 40, 50, 60, 70, 80, 90
     }
     // MARK: Map
     func test_56() {

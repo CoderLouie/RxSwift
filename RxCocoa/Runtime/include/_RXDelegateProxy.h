@@ -10,6 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+/*
+ 1. 为什么在Rx中包装一个具有返回类型的委托是一件困难的事情？
+
+ 带有返回类型的委托方法并不用于观察，而是用于自定义行为
+ 定义一个在任何情况下都可以工作的自动默认值不是一项简单的任务
+ */
 @interface _RXDelegateProxy : NSObject
 
 @property (nonatomic, weak, readonly) id _forwardToDelegate;

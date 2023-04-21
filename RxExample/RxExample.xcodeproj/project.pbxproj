@@ -800,21 +800,21 @@
 			isa = PBXGroup;
 			children = (
 				C8BCD3E41C14A950005F1280 /* Numbers */,
-				B6E1AF0328E2F99E005A7CBA /* Mine */,
-				252C9F671F1410D600F5F951 /* UIPickerViewExample */,
-				8479BC6F1C3BCB4800FB8B54 /* ImagePicker */,
 				C8BCD3E81C14B015005F1280 /* SimpleValidation */,
 				0744CDEB1C4DB71300720FD2 /* GeolocationExample */,
 				C86E2F4C1AE5A10900C31024 /* GitHubSignup */,
+				075F130E1B4E9D10000D7861 /* APIWrappers */,
+				07A5C3D91B70B6B8001EFE5C /* Calculator */,
+				8479BC6F1C3BCB4800FB8B54 /* ImagePicker */,
+				252C9F671F1410D600F5F951 /* UIPickerViewExample */,
+				B6E1AF0328E2F99E005A7CBA /* Mine */,
 				C822B1E11C14E37B0088A01A /* SimpleTableViewExample */,
 				C822B1E51C14E7120088A01A /* SimpleTableViewExampleSectioned */,
-				C86781CF1DB8250400B2029A /* macOS simple example */,
 				C864BAD01C3332F10083833C /* TableViewWithEditingCommands */,
 				C8984CCD1C36BC3E001E4272 /* TableViewPartialUpdates */,
 				C86E2F301AE5A0CA00C31024 /* WikipediaImageSearch */,
-				075F130E1B4E9D10000D7861 /* APIWrappers */,
-				07A5C3D91B70B6B8001EFE5C /* Calculator */,
 				C843A08B1C1CE39900CBA4BD /* GitHubSearchRepositories */,
+				C86781CF1DB8250400B2029A /* macOS simple example */,
 			);
 			path = Examples;
 			sourceTree = "<group>";

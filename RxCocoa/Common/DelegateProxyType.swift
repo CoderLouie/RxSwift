@@ -317,8 +317,11 @@ extension DelegateProxyType where ParentObject: HasPrefetchDataSource, Self.Dele
 import UIKit
 
 extension ObservableType {
-    func subscribeProxyDataSource<DelegateProxy: DelegateProxyType>(ofObject object: DelegateProxy.ParentObject, dataSource: DelegateProxy.Delegate, retainDataSource: Bool, binding: @escaping (DelegateProxy, Event<Element>) -> Void)
-        -> Disposable
+    func subscribeProxyDataSource<DelegateProxy: DelegateProxyType>(
+        ofObject object: DelegateProxy.ParentObject,
+        dataSource: DelegateProxy.Delegate,
+        retainDataSource: Bool,
+        binding: @escaping (DelegateProxy, Event<Element>) -> Void) -> Disposable
         where DelegateProxy.ParentObject: UIView
         , DelegateProxy.Delegate: AnyObject {
         let proxy = DelegateProxy.proxy(for: object)
