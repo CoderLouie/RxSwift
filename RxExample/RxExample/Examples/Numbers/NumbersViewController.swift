@@ -389,7 +389,7 @@ extension NumbersViewController {
         // 12, 32, 62, 102
     }
     /*
-     latMap和flatMapLatest的区别是，当原序列有新的事件发生的时候，flatMapLast 会自动取消上一个事件的订阅，转到新的事件的订阅上面， flatMap则会订阅全部。
+     flatMap和flatMapLatest的区别是，当原序列有新的事件发生的时候，flatMapLast 会自动取消上一个事件的订阅，转到新的事件的订阅上面， flatMap则会订阅全部。
      */
     // MARK: flatMapLatest
     func test_58() {
