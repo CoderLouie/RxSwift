@@ -301,9 +301,11 @@ custom_categories:
   - SwiftSupport
 - name: RxSwift/Traits/Infallible
   children:
+  - Infallible+CombineLatest+Collection
   - Infallible+CombineLatest+arity
   - Infallible+Concurrency
   - Infallible+Create
+  - Infallible+Debug
   - Infallible+Operators
   - Infallible+Zip+arity
   - Infallible
